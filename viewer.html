@@ -2,79 +2,67 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Inventory Image Viewer</title>
+<title>Image Viewer</title>
 
 <style>
 
 body{
-font-family:Arial;
-background:#111;
-color:white;
-margin:0;
+    background:#111;
+    color:white;
+    font-family:Arial;
+    margin:0;
 }
 
-#top{
-padding:10px;
-background:#222;
+/* top menu */
+
+#topbar{
+    padding:10px;
+    background:#222;
+    position:sticky;
+    top:0;
+    z-index:10;
 }
 
 #search{
-width:300px;
-padding:6px;
-font-size:16px;
-}
-
-#viewer{
-
-height:70vh;
-overflow:auto;
-border-top:1px solid #333;
-border-bottom:1px solid #333;
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-cursor:grab;
-}
-
-#viewer img{
-
-transition:transform 0.1s;
-max-width:none;
-
-}
-
-#toolbar{
-padding:10px;
-text-align:center;
-background:#1b1b1b;
+    width:200px;
+    padding:5px;
 }
 
 button{
-
-padding:6px 12px;
-font-size:16px;
-margin:4px;
-cursor:pointer;
-
+    padding:5px 10px;
+    margin-left:5px;
 }
 
-#gallery{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-padding:10px;
+/* viewer area */
+
+#viewer{
+    width:100%;
+    height:65vh;
+    overflow:auto;
+    background:#000;
+    text-align:center;
+}
+
+/* image */
+
+#imgview{
+    transform-origin:center center;
+    cursor:grab;
+}
+
+/* thumbnails */
+
+#thumbs{
+    background:#111;
+    padding:10px;
+    white-space:nowrap;
+    overflow-x:auto;
 }
 
 .thumb{
-width:120px;
-cursor:pointer;
-border:2px solid #333;
-}
-
-.thumb:hover{
-border:2px solid #00aaff;
+    height:80px;
+    margin:5px;
+    cursor:pointer;
 }
 
 </style>
@@ -82,12 +70,10 @@ border:2px solid #00aaff;
 
 <body>
 
-<div id="top">
-Search :
-<input id="search" placeholder="ค้นหาสินค้า">
-</div>
+<div id="topbar">
 
-<div id="toolbar">
+Search :
+<input id="search" placeholder="ชื่อสินค้า">
 
 <button onclick="zoomIn()">+</button>
 <button onclick="zoomOut()">-</button>
@@ -95,179 +81,166 @@ Search :
 
 </div>
 
+
 <div id="viewer">
-<img id="mainimg">
+<img id="imgview">
 </div>
 
-<div id="gallery"></div>
+
+<div id="thumbs"></div>
+
 
 <script>
 
-let data=[]
-let zoom=1
+let scale = 1
 
-const mainimg=document.getElementById("mainimg")
-const gallery=document.getElementById("gallery")
-const search=document.getElementById("search")
-const viewer=document.getElementById("viewer")
+const imgview = document.getElementById("imgview")
+const viewer = document.getElementById("viewer")
+const thumbs = document.getElementById("thumbs")
 
-fetch("images.json")
-.then(res=>res.json())
-.then(json=>{
+/* โหลดรูปจาก Excel parameter */
 
-data=json
+const params = new URLSearchParams(window.location.search)
+const img = params.get("img")
 
-renderGallery(data)
-
-loadImageFromURL()
-
-})
-
-// render thumbnail
-function renderGallery(list){
-
-gallery.innerHTML=""
-
-list.forEach(item=>{
-
-let img=document.createElement("img")
-
-img.src=item.url
-img.className="thumb"
-
-img.onclick=function(){
-showImage(item.url)
+if(img){
+    imgview.src = img
 }
 
-gallery.appendChild(img)
 
-})
+/* Zoom buttons */
 
-}
-
-// show main image
-function showImage(url){
-
-mainimg.src=url
-zoom=1
-applyZoom()
-
-}
-
-// zoom functions
 function zoomIn(){
-
-zoom+=0.2
-applyZoom()
-
+    scale += 0.2
+    updateZoom()
 }
 
 function zoomOut(){
-
-zoom-=0.2
-
-if(zoom<0.2) zoom=0.2
-
-applyZoom()
-
+    scale -= 0.2
+    if(scale < 0.2) scale = 0.2
+    updateZoom()
 }
 
 function resetZoom(){
-
-zoom=1
-applyZoom()
-
+    scale = 1
+    updateZoom()
 }
 
-function applyZoom(){
-
-mainimg.style.transform="scale("+zoom+")"
-
+function updateZoom(){
+    imgview.style.transform = "scale("+scale+")"
 }
 
-// search
-search.addEventListener("keyup",function(){
 
-let keyword=this.value.toLowerCase()
+/* drag image */
 
-let filtered=data.filter(item=>
-item.name.toLowerCase().includes(keyword)
-)
-
-renderGallery(filtered)
-
-if(filtered.length>0){
-showImage(filtered[0].url)
-}
-
-})
-
-// excel link
-function loadImageFromURL(){
-
-const params=new URLSearchParams(window.location.search)
-
-const img=params.get("img")
-
-if(img){
-showImage(img)
-}
-
-}
-
-search.focus()
-
-// drag image
-
-let isDown=false
+let isDown = false
 let startX
 let startY
 let scrollLeft
 let scrollTop
 
-viewer.addEventListener("mousedown",e=>{
+viewer.addEventListener("mousedown", (e)=>{
 
-isDown=true
-viewer.style.cursor="grabbing"
+    isDown = true
+    imgview.style.cursor = "grabbing"
 
-startX=e.pageX-viewer.offsetLeft
-startY=e.pageY-viewer.offsetTop
+    startX = e.pageX
+    startY = e.pageY
 
-scrollLeft=viewer.scrollLeft
-scrollTop=viewer.scrollTop
-
-})
-
-viewer.addEventListener("mouseleave",()=>{
-
-isDown=false
-viewer.style.cursor="grab"
+    scrollLeft = viewer.scrollLeft
+    scrollTop = viewer.scrollTop
 
 })
 
-viewer.addEventListener("mouseup",()=>{
+viewer.addEventListener("mouseleave", ()=>{
 
-isDown=false
-viewer.style.cursor="grab"
+    isDown = false
+    imgview.style.cursor = "grab"
+
+})
+
+viewer.addEventListener("mouseup", ()=>{
+
+    isDown = false
+    imgview.style.cursor = "grab"
 
 })
 
-viewer.addEventListener("mousemove",e=>{
+viewer.addEventListener("mousemove", (e)=>{
 
-if(!isDown) return
+    if(!isDown) return
 
-e.preventDefault()
+    e.preventDefault()
 
-const x=e.pageX-viewer.offsetLeft
-const y=e.pageY-viewer.offsetTop
+    const x = e.pageX - startX
+    const y = e.pageY - startY
 
-const walkX=(x-startX)
-const walkY=(y-startY)
-
-viewer.scrollLeft=scrollLeft-walkX
-viewer.scrollTop=scrollTop-walkY
+    viewer.scrollLeft = scrollLeft - x
+    viewer.scrollTop = scrollTop - y
 
 })
+
+
+/* image database */
+
+const images = [
+
+{ name:"15DT992", url:"imginv/com/15DT992.jpg" },
+{ name:"15DT993", url:"imginv/com/15DT993.jpg" },
+{ name:"15DT994", url:"imginv/com/15DT994.jpg" }
+
+]
+
+/* show thumbnails */
+
+function showThumb(list){
+
+    thumbs.innerHTML=""
+
+    list.forEach(img=>{
+
+        const t = document.createElement("img")
+
+        t.src = img.url
+        t.className="thumb"
+
+        t.onclick = ()=>{
+
+            imgview.src = img.url
+            resetZoom()
+
+        }
+
+        thumbs.appendChild(t)
+
+    })
+
+}
+
+/* search */
+
+document.getElementById("search").addEventListener("input", function(){
+
+    const key = this.value.toLowerCase()
+
+    const result = images.filter(i =>
+        i.name.toLowerCase().includes(key)
+    )
+
+    showThumb(result)
+
+    if(result.length > 0){
+
+        imgview.src = result[0].url
+        resetZoom()
+
+    }
+
+})
+
+/* initial */
+
+showThumb(images)
 
 </script>
 
