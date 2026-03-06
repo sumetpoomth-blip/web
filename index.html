@@ -1,11 +1,45 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta charset="UTF-8">
+<title>Image Viewer</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#f2f2f2;
+}
+
+img{
+max-width:90%;
+max-height:90vh;
+margin-top:20px;
+box-shadow:0 0 10px rgba(0,0,0,0.3);
+}
+</style>
+
+<script>
+function getParameter(name){
+let url = new URL(window.location.href);
+return url.searchParams.get(name);
+}
+
+window.onload = function(){
+let img = getParameter("img");
+if(img){
+document.getElementById("pic").src = img;
+}
+}
+</script>
+
+</head>
+
 <body>
 
-<h2>Hello !!!</h2>
+<h2>Image Viewer</h2>
 
+<img id="pic">
 
 </body>
 </html>
-
-
