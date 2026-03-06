@@ -46,12 +46,10 @@ padding:10px;
 width:120px;
 cursor:pointer;
 border:2px solid #333;
-transition:0.2s;
 }
 
 .thumb:hover{
 border:2px solid #00aaff;
-transform:scale(1.05);
 }
 
 </style>
@@ -60,10 +58,8 @@ transform:scale(1.05);
 <body>
 
 <div id="top">
-
 Search :
 <input id="search" placeholder="ค้นหาสินค้า">
-
 </div>
 
 <div id="viewer">
@@ -76,67 +72,74 @@ Search :
 
 let data=[]
 const mainimg=document.getElementById("mainimg")
+const gallery=document.getElementById("gallery")
+const search=document.getElementById("search")
 
+// โหลดรายการรูป
 fetch("images.json")
-.then(r=>r.json())
-.then(j=>{
-data=j
-render(data)
-loadFromURL()
+.then(res => res.json())
+.then(json => {
+
+data=json
+
+renderGallery(data)
+
+loadImageFromURL()
+
 })
 
-function render(list){
+// สร้าง thumbnail
+function renderGallery(list){
 
-const g=document.getElementById("gallery")
-g.innerHTML=""
+gallery.innerHTML=""
 
-list.forEach(i=>{
+list.forEach(item => {
 
 let img=document.createElement("img")
 
-img.src=i.url
+img.src=item.url
 img.className="thumb"
 
-img.onclick=()=>{
-
-showImage(i.url)
-
-document.querySelectorAll(".thumb").forEach(t=>t.style.border="2px solid #333")
-img.style.border="2px solid #00aaff"
-
+img.onclick=function(){
+showImage(item.url)
 }
 
-g.appendChild(img)
+gallery.appendChild(img)
 
 })
 
 }
 
+// แสดงรูปใหญ่
 function showImage(url){
 
 mainimg.src=url
 
 }
 
-document.getElementById("search").onkeyup=function(){
+// ค้นหา
+search.addEventListener("keyup",function(){
 
-let k=this.value.toLowerCase()
+let keyword=this.value.toLowerCase()
 
-let filtered=data.filter(x=>
-x.name.toLowerCase().includes(k)
+let filtered=data.filter(item =>
+item.name.toLowerCase().includes(keyword)
 )
 
-render(filtered)
+renderGallery(filtered)
 
+// เปลี่ยนรูปใหญ่ตามผลลัพธ์แรก
 if(filtered.length>0){
 showImage(filtered[0].url)
 }
 
-}
+})
 
-function loadFromURL(){
+// รับค่าจาก Excel
+function loadImageFromURL(){
 
 const params=new URLSearchParams(window.location.search)
+
 const img=params.get("img")
 
 if(img){
