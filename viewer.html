@@ -25,17 +25,39 @@ font-size:16px;
 }
 
 #viewer{
-text-align:center;
-padding:10px;
+
+height:70vh;
 overflow:auto;
+border-top:1px solid #333;
+border-bottom:1px solid #333;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+cursor:grab;
 }
 
 #viewer img{
-max-width:95%;
-max-height:70vh;
-box-shadow:0 0 20px black;
+
 transition:transform 0.1s;
-cursor:zoom-in;
+max-width:none;
+
+}
+
+#toolbar{
+padding:10px;
+text-align:center;
+background:#1b1b1b;
+}
+
+button{
+
+padding:6px 12px;
+font-size:16px;
+margin:4px;
+cursor:pointer;
+
 }
 
 #gallery{
@@ -65,6 +87,14 @@ Search :
 <input id="search" placeholder="ค้นหาสินค้า">
 </div>
 
+<div id="toolbar">
+
+<button onclick="zoomIn()">+</button>
+<button onclick="zoomOut()">-</button>
+<button onclick="resetZoom()">Reset</button>
+
+</div>
+
 <div id="viewer">
 <img id="mainimg">
 </div>
@@ -79,13 +109,16 @@ let zoom=1
 const mainimg=document.getElementById("mainimg")
 const gallery=document.getElementById("gallery")
 const search=document.getElementById("search")
+const viewer=document.getElementById("viewer")
 
 fetch("images.json")
-.then(res => res.json())
-.then(json => {
+.then(res=>res.json())
+.then(json=>{
 
 data=json
+
 renderGallery(data)
+
 loadImageFromURL()
 
 })
@@ -95,7 +128,7 @@ function renderGallery(list){
 
 gallery.innerHTML=""
 
-list.forEach(item => {
+list.forEach(item=>{
 
 let img=document.createElement("img")
 
@@ -117,7 +150,38 @@ function showImage(url){
 
 mainimg.src=url
 zoom=1
-mainimg.style.transform="scale(1)"
+applyZoom()
+
+}
+
+// zoom functions
+function zoomIn(){
+
+zoom+=0.2
+applyZoom()
+
+}
+
+function zoomOut(){
+
+zoom-=0.2
+
+if(zoom<0.2) zoom=0.2
+
+applyZoom()
+
+}
+
+function resetZoom(){
+
+zoom=1
+applyZoom()
+
+}
+
+function applyZoom(){
+
+mainimg.style.transform="scale("+zoom+")"
 
 }
 
@@ -126,7 +190,7 @@ search.addEventListener("keyup",function(){
 
 let keyword=this.value.toLowerCase()
 
-let filtered=data.filter(item =>
+let filtered=data.filter(item=>
 item.name.toLowerCase().includes(keyword)
 )
 
@@ -138,10 +202,11 @@ showImage(filtered[0].url)
 
 })
 
-// excel url
+// excel link
 function loadImageFromURL(){
 
 const params=new URLSearchParams(window.location.search)
+
 const img=params.get("img")
 
 if(img){
@@ -152,29 +217,55 @@ showImage(img)
 
 search.focus()
 
-// ZOOM WITH SCROLL
-mainimg.addEventListener("wheel",function(e){
+// drag image
 
-e.preventDefault()
+let isDown=false
+let startX
+let startY
+let scrollLeft
+let scrollTop
 
-if(e.deltaY<0){
-zoom+=0.1
-}else{
-zoom-=0.1
-}
+viewer.addEventListener("mousedown",e=>{
 
-if(zoom<0.2) zoom=0.2
-if(zoom>5) zoom=5
+isDown=true
+viewer.style.cursor="grabbing"
 
-mainimg.style.transform="scale("+zoom+")"
+startX=e.pageX-viewer.offsetLeft
+startY=e.pageY-viewer.offsetTop
+
+scrollLeft=viewer.scrollLeft
+scrollTop=viewer.scrollTop
 
 })
 
-// DOUBLE CLICK RESET
-mainimg.addEventListener("dblclick",function(){
+viewer.addEventListener("mouseleave",()=>{
 
-zoom=1
-mainimg.style.transform="scale(1)"
+isDown=false
+viewer.style.cursor="grab"
+
+})
+
+viewer.addEventListener("mouseup",()=>{
+
+isDown=false
+viewer.style.cursor="grab"
+
+})
+
+viewer.addEventListener("mousemove",e=>{
+
+if(!isDown) return
+
+e.preventDefault()
+
+const x=e.pageX-viewer.offsetLeft
+const y=e.pageY-viewer.offsetTop
+
+const walkX=(x-startX)
+const walkY=(y-startY)
+
+viewer.scrollLeft=scrollLeft-walkX
+viewer.scrollTop=scrollTop-walkY
 
 })
 
