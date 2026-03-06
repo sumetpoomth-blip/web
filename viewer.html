@@ -27,12 +27,15 @@ font-size:16px;
 #viewer{
 text-align:center;
 padding:10px;
+overflow:auto;
 }
 
 #viewer img{
 max-width:95%;
 max-height:70vh;
 box-shadow:0 0 20px black;
+transition:transform 0.1s;
+cursor:zoom-in;
 }
 
 #gallery{
@@ -59,7 +62,7 @@ border:2px solid #00aaff;
 
 <div id="top">
 Search :
-<input id="search" placeholder="ค้นหา Serial Number">
+<input id="search" placeholder="ค้นหาสินค้า">
 </div>
 
 <div id="viewer">
@@ -71,24 +74,23 @@ Search :
 <script>
 
 let data=[]
+let zoom=1
+
 const mainimg=document.getElementById("mainimg")
 const gallery=document.getElementById("gallery")
 const search=document.getElementById("search")
 
-// โหลดรายการรูป
 fetch("images.json")
 .then(res => res.json())
 .then(json => {
 
 data=json
-
 renderGallery(data)
-
 loadImageFromURL()
 
 })
 
-// สร้าง thumbnail
+// render thumbnail
 function renderGallery(list){
 
 gallery.innerHTML=""
@@ -110,14 +112,16 @@ gallery.appendChild(img)
 
 }
 
-// แสดงรูปใหญ่
+// show main image
 function showImage(url){
 
 mainimg.src=url
+zoom=1
+mainimg.style.transform="scale(1)"
 
 }
 
-// ค้นหา
+// search
 search.addEventListener("keyup",function(){
 
 let keyword=this.value.toLowerCase()
@@ -128,18 +132,16 @@ item.name.toLowerCase().includes(keyword)
 
 renderGallery(filtered)
 
-// เปลี่ยนรูปใหญ่ตามผลลัพธ์แรก
 if(filtered.length>0){
 showImage(filtered[0].url)
 }
 
 })
 
-// รับค่าจาก Excel
+// excel url
 function loadImageFromURL(){
 
 const params=new URLSearchParams(window.location.search)
-
 const img=params.get("img")
 
 if(img){
@@ -147,6 +149,34 @@ showImage(img)
 }
 
 }
+
+search.focus()
+
+// ZOOM WITH SCROLL
+mainimg.addEventListener("wheel",function(e){
+
+e.preventDefault()
+
+if(e.deltaY<0){
+zoom+=0.1
+}else{
+zoom-=0.1
+}
+
+if(zoom<0.2) zoom=0.2
+if(zoom>5) zoom=5
+
+mainimg.style.transform="scale("+zoom+")"
+
+})
+
+// DOUBLE CLICK RESET
+mainimg.addEventListener("dblclick",function(){
+
+zoom=1
+mainimg.style.transform="scale(1)"
+
+})
 
 </script>
 
