@@ -97,6 +97,16 @@ button{
 
 <script>
 
+const password = "1234"
+
+let user = prompt("Enter Password")
+
+if(user !== password){
+    alert("Wrong password")
+    document.body.innerHTML = "Access Denied"
+    throw new Error("stop")
+}    
+    
 /* elements */
 
 const imgview = document.getElementById("imgview")
