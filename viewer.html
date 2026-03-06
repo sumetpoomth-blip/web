@@ -24,11 +24,21 @@ padding:6px;
 font-size:16px;
 }
 
+#viewer{
+text-align:center;
+padding:10px;
+}
+
+#viewer img{
+max-width:95%;
+max-height:70vh;
+}
+
 #gallery{
 display:flex;
 flex-wrap:wrap;
-padding:10px;
 gap:10px;
+padding:10px;
 }
 
 .thumb{
@@ -39,17 +49,6 @@ border:2px solid #333;
 
 .thumb:hover{
 border:2px solid #00aaff;
-}
-
-#viewer{
-text-align:center;
-padding:10px;
-}
-
-#viewer img{
-max-width:95%;
-max-height:70vh;
-overflow:auto;
 }
 
 </style>
@@ -68,57 +67,66 @@ Search :
 
 <div id="gallery"></div>
 
-
 <script>
 
-let data=[];
+let data=[]
+const mainimg=document.getElementById("mainimg")
 
 fetch("images.json")
 .then(r=>r.json())
 .then(j=>{
-data=j;
-render(data);
-checkURL();
-});
+data=j
+render(data)
+loadFromURL()
+})
 
 function render(list){
 
-const g=document.getElementById("gallery");
-g.innerHTML="";
+const g=document.getElementById("gallery")
+g.innerHTML=""
 
 list.forEach(i=>{
 
-let img=document.createElement("img");
-img.src=i.url;
-img.className="thumb";
+let img=document.createElement("img")
+
+img.src=i.url
+img.className="thumb"
 
 img.onclick=()=>{
-document.getElementById("mainimg").src=i.url;
-};
+showImage(i.url)
+}
 
-g.appendChild(img);
+g.appendChild(img)
 
-});
+})
+
+}
+
+function showImage(url){
+
+mainimg.src=url
 
 }
 
 document.getElementById("search").onkeyup=function(){
 
-let k=this.value.toLowerCase();
+let k=this.value.toLowerCase()
 
-let filtered=data.filter(x=>x.name.toLowerCase().includes(k));
+let filtered=data.filter(x=>
+x.name.toLowerCase().includes(k)
+)
 
-render(filtered);
+render(filtered)
 
 }
 
-function checkURL(){
+function loadFromURL(){
 
-const params=new URLSearchParams(window.location.search);
-const img=params.get("img");
+const params=new URLSearchParams(window.location.search)
+const img=params.get("img")
 
 if(img){
-document.getElementById("mainimg").src=img;
+showImage(img)
 }
 
 }
