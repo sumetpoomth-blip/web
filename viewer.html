@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="utf-8">
@@ -7,37 +8,41 @@
 <style>
 
 body{
+    margin:0;
+    font-family:Arial;
     background:#111;
     color:white;
-    font-family:Arial;
-    margin:0;
 }
 
-/* top menu */
+/* top bar */
 
 #topbar{
-    padding:10px;
     background:#222;
-    position:sticky;
-    top:0;
-    z-index:10;
+    padding:10px;
+    display:flex;
+    gap:10px;
+    align-items:center;
 }
 
+/* search */
+
 #search{
-    width:200px;
     padding:5px;
+    width:200px;
 }
+
+/* zoom buttons */
 
 button{
     padding:5px 10px;
-    margin-left:5px;
+    cursor:pointer;
 }
 
-/* viewer area */
+/* viewer */
 
 #viewer{
     width:100%;
-    height:65vh;
+    height:70vh;
     overflow:auto;
     background:#000;
     text-align:center;
@@ -46,201 +51,206 @@ button{
 /* image */
 
 #imgview{
-    transform-origin:center center;
-    cursor:grab;
+    display:block;
+    margin:auto;
 }
 
 /* thumbnails */
 
 #thumbs{
-    background:#111;
+    background:#222;
     padding:10px;
-    white-space:nowrap;
-    overflow-x:auto;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
 }
 
 .thumb{
+    width:80px;
     height:80px;
-    margin:5px;
+    object-fit:cover;
     cursor:pointer;
+    border:2px solid #444;
+}
+
+.thumb:hover{
+    border:2px solid white;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div id="topbar">
 
-Search :
-<input id="search" placeholder="ชื่อสินค้า">
+<input id="search" placeholder="Search image">
 
-<button onclick="zoomIn()">+</button>
-<button onclick="zoomOut()">-</button>
-<button onclick="resetZoom()">Reset</button>
+<button onclick="zoomIn()">+</button> <button onclick="zoomOut()">-</button> <button onclick="resetZoom()">Reset</button>
 
 </div>
-
 
 <div id="viewer">
 <img id="imgview">
 </div>
 
-
 <div id="thumbs"></div>
-
 
 <script>
 
-let scale = 1
+/* CONFIG */
 
-const imgview = document.getElementById("imgview")
-const viewer = document.getElementById("viewer")
-const thumbs = document.getElementById("thumbs")
+const baseURL =
+"https://sumetpoomth-blip.github.io/web/imginv/com/"
 
-/* โหลดรูปจาก Excel parameter */
-
-const params = new URLSearchParams(window.location.search)
-const img = params.get("img")
-
-if(img){
-    imgview.src = img
-}
-
-
-/* Zoom buttons */
-
-function zoomIn(){
-    scale += 0.2
-    updateZoom()
-}
-
-function zoomOut(){
-    scale -= 0.2
-    if(scale < 0.2) scale = 0.2
-    updateZoom()
-}
-
-function resetZoom(){
-    scale = 1
-    updateZoom()
-}
-
-function updateZoom(){
-    imgview.style.transform = "scale("+scale+")"
-}
-
-
-/* drag image */
-
-let isDown = false
-let startX
-let startY
-let scrollLeft
-let scrollTop
-
-viewer.addEventListener("mousedown", (e)=>{
-
-    isDown = true
-    imgview.style.cursor = "grabbing"
-
-    startX = e.pageX
-    startY = e.pageY
-
-    scrollLeft = viewer.scrollLeft
-    scrollTop = viewer.scrollTop
-
-})
-
-viewer.addEventListener("mouseleave", ()=>{
-
-    isDown = false
-    imgview.style.cursor = "grab"
-
-})
-
-viewer.addEventListener("mouseup", ()=>{
-
-    isDown = false
-    imgview.style.cursor = "grab"
-
-})
-
-viewer.addEventListener("mousemove", (e)=>{
-
-    if(!isDown) return
-
-    e.preventDefault()
-
-    const x = e.pageX - startX
-    const y = e.pageY - startY
-
-    viewer.scrollLeft = scrollLeft - x
-    viewer.scrollTop = scrollTop - y
-
-})
-
-
-/* image database */
+/* image list */
 
 const images = [
-
-{ name:"15DT992", url:"imginv/com/15DT992.jpg" },
-{ name:"15DT993", url:"imginv/com/15DT993.jpg" },
-{ name:"15DT994", url:"imginv/com/15DT994.jpg" }
-
+"15DT992",
+"15DT993",
+"15DT994",
+"15DT995",
+"15DT996",
+"15DT997"
 ]
 
-/* show thumbnails */
+
+
+/* elements */
+
+const imgview = document.getElementById("imgview")
+const thumbs = document.getElementById("thumbs")
+const search = document.getElementById("search")
+
+
+/* zoom */
+
+let scale = 1
+let originalWidth = 0
+
+
+imgview.onload = function(){
+
+    originalWidth = imgview.naturalWidth
+    resetZoom()
+
+}
+
+
+/* open image */
+
+function openImage(name){
+
+    imgview.src = baseURL + name + ".jpg"
+
+}
+
+
+/* create thumbnails */
 
 function showThumb(list){
 
     thumbs.innerHTML=""
 
-    list.forEach(img=>{
+    list.forEach(name=>{
 
-        const t = document.createElement("img")
+        let img = document.createElement("img")
 
-        t.src = img.url
-        t.className="thumb"
+        img.src = baseURL + name + ".jpg"
 
-        t.onclick = ()=>{
+        img.className="thumb"
 
-            imgview.src = img.url
-            resetZoom()
+        img.onclick = function(){
+
+            openImage(name)
 
         }
 
-        thumbs.appendChild(t)
+        thumbs.appendChild(img)
 
     })
 
 }
 
+
+
 /* search */
 
-document.getElementById("search").addEventListener("input", function(){
+search.addEventListener("input",function(){
 
-    const key = this.value.toLowerCase()
+    let keyword = this.value.toLowerCase()
 
-    const result = images.filter(i =>
-        i.name.toLowerCase().includes(key)
-    )
+    let result = images.filter(x=>x.toLowerCase().includes(keyword))
 
     showThumb(result)
 
-    if(result.length > 0){
-
-        imgview.src = result[0].url
-        resetZoom()
-
+    if(result.length>0){
+        openImage(result[0])
     }
 
 })
 
-/* initial */
+
+
+/* zoom functions */
+
+function zoomIn(){
+
+    scale += 0.2
+    updateZoom()
+
+}
+
+function zoomOut(){
+
+    scale -= 0.2
+
+    if(scale<0.2) scale=0.2
+
+    updateZoom()
+
+}
+
+function resetZoom(){
+
+    scale = 1
+    updateZoom()
+
+}
+
+function updateZoom(){
+
+    imgview.style.width = (originalWidth * scale) + "px"
+    imgview.style.height = "auto"
+
+}
+
+
+
+/* load from excel link */
+
+const params = new URLSearchParams(window.location.search)
+
+const img = params.get("img")
+
+if(img){
+
+    imgview.src = img
+
+}else{
+
+    openImage(images[0])
+
+}
+
+
+
+/* initial thumbnails */
 
 showThumb(images)
+
+
 
 </script>
 
