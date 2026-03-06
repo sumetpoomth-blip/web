@@ -2,36 +2,127 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Image Viewer</title>
+<title>Inventory Image Viewer</title>
+
 <style>
+
 body{
-    background:#111;
-    color:white;
-    text-align:center;
-    font-family:Arial;
+font-family:Arial;
+background:#111;
+color:white;
+margin:0;
 }
-img{
-    max-width:90%;
-    max-height:90vh;
-    margin-top:20px;
-    box-shadow:0 0 20px #000;
+
+#top{
+padding:10px;
+background:#222;
 }
+
+#search{
+width:300px;
+padding:6px;
+font-size:16px;
+}
+
+#gallery{
+display:flex;
+flex-wrap:wrap;
+padding:10px;
+gap:10px;
+}
+
+.thumb{
+width:120px;
+cursor:pointer;
+border:2px solid #333;
+}
+
+.thumb:hover{
+border:2px solid #00aaff;
+}
+
+#viewer{
+text-align:center;
+padding:10px;
+}
+
+#viewer img{
+max-width:95%;
+max-height:70vh;
+overflow:auto;
+}
+
 </style>
 </head>
 
 <body>
 
-<h2>Image Viewer</h2>
+<div id="top">
+Search :
+<input id="search" placeholder="ค้นหาสินค้า">
+</div>
 
-<img id="imgview">
+<div id="viewer">
+<img id="mainimg">
+</div>
+
+<div id="gallery"></div>
+
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const img = params.get("img");
+
+let data=[];
+
+fetch("images.json")
+.then(r=>r.json())
+.then(j=>{
+data=j;
+render(data);
+checkURL();
+});
+
+function render(list){
+
+const g=document.getElementById("gallery");
+g.innerHTML="";
+
+list.forEach(i=>{
+
+let img=document.createElement("img");
+img.src=i.url;
+img.className="thumb";
+
+img.onclick=()=>{
+document.getElementById("mainimg").src=i.url;
+};
+
+g.appendChild(img);
+
+});
+
+}
+
+document.getElementById("search").onkeyup=function(){
+
+let k=this.value.toLowerCase();
+
+let filtered=data.filter(x=>x.name.toLowerCase().includes(k));
+
+render(filtered);
+
+}
+
+function checkURL(){
+
+const params=new URLSearchParams(window.location.search);
+const img=params.get("img");
 
 if(img){
-    document.getElementById("imgview").src = img;
+document.getElementById("mainimg").src=img;
 }
+
+}
+
 </script>
 
 </body>
