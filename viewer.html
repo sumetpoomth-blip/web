@@ -24,17 +24,15 @@ body{
     align-items:center;
 }
 
-/* search */
-
 #search{
     padding:5px;
-    width:200px;
+    width:220px;
 }
 
-/* zoom buttons */
+/* buttons */
 
 button{
-    padding:5px 10px;
+    padding:5px 12px;
     cursor:pointer;
 }
 
@@ -99,30 +97,15 @@ button{
 
 <script>
 
-/* CONFIG */
-
-const baseURL =
-"https://sumetpoomth-blip.github.io/web/imginv/com/"
-
-/* image list */
-
-const images = [
-"15DT992",
-"15DT993",
-"15DT994",
-"15DT995",
-"15DT996",
-"15DT997"
-]
-
-
-
 /* elements */
 
 const imgview = document.getElementById("imgview")
 const thumbs = document.getElementById("thumbs")
 const search = document.getElementById("search")
 
+/* data */
+
+let images = []
 
 /* zoom */
 
@@ -140,9 +123,9 @@ imgview.onload = function(){
 
 /* open image */
 
-function openImage(name){
+function openImage(url){
 
-    imgview.src = baseURL + name + ".jpg"
+    imgview.src = url
 
 }
 
@@ -153,17 +136,17 @@ function showThumb(list){
 
     thumbs.innerHTML=""
 
-    list.forEach(name=>{
+    list.forEach(item=>{
 
         let img = document.createElement("img")
 
-        img.src = baseURL + name + ".jpg"
+        img.src = item.url
 
         img.className="thumb"
 
         img.onclick = function(){
 
-            openImage(name)
+            openImage(item.url)
 
         }
 
@@ -181,19 +164,21 @@ search.addEventListener("input",function(){
 
     let keyword = this.value.toLowerCase()
 
-    let result = images.filter(x=>x.toLowerCase().includes(keyword))
+    let result = images.filter(x=>x.name.toLowerCase().includes(keyword))
 
     showThumb(result)
 
     if(result.length>0){
-        openImage(result[0])
+
+        openImage(result[0].url)
+
     }
 
 })
 
 
 
-/* zoom functions */
+/* zoom */
 
 function zoomIn(){
 
@@ -228,7 +213,21 @@ function updateZoom(){
 
 
 
-/* load from excel link */
+/* load images.json */
+
+fetch("images.json")
+.then(res => res.json())
+.then(data => {
+
+    images = data
+
+    showThumb(images)
+
+})
+
+
+
+/* open image from Excel link */
 
 const params = new URLSearchParams(window.location.search)
 
@@ -238,17 +237,7 @@ if(img){
 
     imgview.src = img
 
-}else{
-
-    openImage(images[0])
-
 }
-
-
-
-/* initial thumbnails */
-
-showThumb(images)
 
 
 
