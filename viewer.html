@@ -32,6 +32,7 @@ padding:10px;
 #viewer img{
 max-width:95%;
 max-height:70vh;
+box-shadow:0 0 20px black;
 }
 
 #gallery{
@@ -45,10 +46,12 @@ padding:10px;
 width:120px;
 cursor:pointer;
 border:2px solid #333;
+transition:0.2s;
 }
 
 .thumb:hover{
 border:2px solid #00aaff;
+transform:scale(1.05);
 }
 
 </style>
@@ -57,8 +60,10 @@ border:2px solid #00aaff;
 <body>
 
 <div id="top">
+
 Search :
 <input id="search" placeholder="ค้นหาสินค้า">
+
 </div>
 
 <div id="viewer">
@@ -93,7 +98,12 @@ img.src=i.url
 img.className="thumb"
 
 img.onclick=()=>{
+
 showImage(i.url)
+
+document.querySelectorAll(".thumb").forEach(t=>t.style.border="2px solid #333")
+img.style.border="2px solid #00aaff"
+
 }
 
 g.appendChild(img)
@@ -112,14 +122,13 @@ document.getElementById("search").onkeyup=function(){
 
 let k=this.value.toLowerCase()
 
-let filtered=data.filter(x =>
+let filtered=data.filter(x=>
 x.name.toLowerCase().includes(k)
 )
 
 render(filtered)
 
-// ให้รูปใหญ่เปลี่ยนตามผลลัพธ์แรก
-if(filtered.length > 0){
+if(filtered.length>0){
 showImage(filtered[0].url)
 }
 
