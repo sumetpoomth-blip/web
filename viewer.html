@@ -112,11 +112,16 @@ document.getElementById("search").onkeyup=function(){
 
 let k=this.value.toLowerCase()
 
-let filtered=data.filter(x=>
+let filtered=data.filter(x =>
 x.name.toLowerCase().includes(k)
 )
 
 render(filtered)
+
+// ให้รูปใหญ่เปลี่ยนตามผลลัพธ์แรก
+if(filtered.length > 0){
+showImage(filtered[0].url)
+}
 
 }
 
