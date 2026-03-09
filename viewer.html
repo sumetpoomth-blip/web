@@ -18,6 +18,19 @@ display:flex;
 width:50%;
 overflow:auto;
 border-right:1px solid #ccc;
+display:flex;
+flex-direction:column;
+}
+
+#searchBox{
+padding:10px;
+border-bottom:1px solid #ccc;
+}
+
+#searchInput{
+width:95%;
+padding:6px;
+font-size:14px;
 }
 
 table{
@@ -75,6 +88,10 @@ transform-origin:top left;
 
 <div id="tableArea">
 
+<div id="searchBox">
+<input id="searchInput" placeholder="Search S/N / Brand / Model">
+</div>
+
 <table id="dataTable">
 
 <thead>
@@ -118,7 +135,6 @@ transform-origin:top left;
 <tr data-sn="PB5NYTX"><td>27</td><td>LENOVO</td><td>Edge72</td><td>PB5NYTX</td><td>IU100156000144</td></tr>
 <tr data-sn="PB5NYTT"><td>28</td><td>LENOVO</td><td>Edge72</td><td>PB5NYTT</td><td>IU100156000141</td></tr>
 <tr data-sn="PB00XTL7"><td>29</td><td>LENOVO</td><td>Edge 73</td><td>PB00XTL7</td><td>IU100157000054</td></tr>
-
 </tbody>
 
 </table>
@@ -196,12 +212,32 @@ applyZoom()
 
 }
 
-
 function applyZoom(){
 
 img.style.transform="scale("+scale+")"
 
 }
+
+
+
+document.getElementById("searchInput").addEventListener("keyup",function(){
+
+let filter=this.value.toUpperCase()
+let rows=document.querySelectorAll("#dataTable tbody tr")
+
+rows.forEach(row=>{
+
+let text=row.innerText.toUpperCase()
+
+if(text.indexOf(filter)>-1){
+row.style.display=""
+}else{
+row.style.display="none"
+}
+
+})
+
+})
 
 </script>
 
