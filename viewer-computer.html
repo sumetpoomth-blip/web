@@ -7,11 +7,38 @@
 
 <style>
 
+#footerMenu a.active{
+font-weight:bold;
+color:#4CAF50;
+}
+  
+#footerMenu{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#222;
+text-align:center;
+padding:10px 0;
+}
+
+#footerMenu a{
+color:white;
+margin:0 20px;
+text-decoration:none;
+font-size:16px;
+}
+
+#footerMenu a:hover{
+text-decoration:underline;
+}
+
 body{
 font-family:Arial;
 margin:0;
 height:100vh;
 display:flex;
+padding-bottom:50px;
 }
 
 #tableArea{
@@ -85,7 +112,9 @@ transform-origin:top left;
 </head>
 
 <body>
-
+  
+<a class="active" href="viewer-computer.html">Computer</a>
+  
 <div id="tableArea">
 
 <div id="searchBox">
@@ -284,6 +313,16 @@ row.style.display="none"
 })
 
 </script>
+  
+<div id="footerMenu">
 
+<a href="viewer-computer.html">Computer</a>
+
+<a href="viewer-monitor.html">Monitor</a>
+
+<a href="viewer-ups.html">UPS</a>
+
+</div>
+  
 </body>
 </html>
