@@ -38,18 +38,34 @@ cursor:pointer;
 
 #viewer{
 width:50%;
-position:relative;
-overflow:hidden;
+display:flex;
+flex-direction:column;
 background:#111;
+}
+
+#toolbar{
+padding:8px;
+background:#222;
+border-bottom:1px solid #444;
+}
+
+button{
+padding:6px 10px;
+margin-right:6px;
+font-size:16px;
+cursor:pointer;
+}
+
+#imageContainer{
+flex:1;
+overflow:auto;
 display:flex;
 justify-content:center;
-align-items:center;
+align-items:flex-start;
 }
 
 #img{
 max-width:none;
-transform-origin:center center;
-cursor:grab;
 }
 
 </style>
@@ -122,7 +138,15 @@ cursor:grab;
 
 <div id="viewer">
 
+<div id="toolbar">
+<button onclick="zoomIn()">+</button>
+<button onclick="zoomOut()">-</button>
+<button onclick="resetZoom()">Reset</button>
+</div>
+
+<div id="imageContainer">
 <img id="img">
+</div>
 
 </div>
 
@@ -130,6 +154,7 @@ cursor:grab;
 
 let images={}
 let img=document.getElementById("img")
+let scale=1
 
 fetch("images.json")
 .then(r=>r.json())
@@ -139,6 +164,7 @@ images[i.name]=i.url
 })
 })
 
+
 document.querySelectorAll("#dataTable tbody tr").forEach(row=>{
 
 row.onclick=function(){
@@ -146,68 +172,46 @@ row.onclick=function(){
 let sn=this.dataset.sn
 
 if(images[sn]){
+
 img.src=images[sn]
+
 scale=1
-posX=0
-posY=0
-updateTransform()
-}
+applyZoom()
 
 }
 
-})
-
-let scale=1
-let posX=0
-let posY=0
-
-function updateTransform(){
-img.style.transform=`translate(${posX}px,${posY}px) scale(${scale})`
 }
 
-document.getElementById("viewer").addEventListener("wheel",function(e){
+})
 
-e.preventDefault()
 
-if(e.deltaY<0){
-scale*=1.1
-}else{
-scale/=1.1
+function zoomIn(){
+
+scale*=1.2
+applyZoom()
+
 }
 
-updateTransform()
+function zoomOut(){
 
-})
+scale/=1.2
+applyZoom()
 
-let dragging=false
-let startX,startY
+}
 
-img.addEventListener("mousedown",function(e){
+function resetZoom(){
 
-dragging=true
-startX=e.clientX-posX
-startY=e.clientY-posY
-img.style.cursor="grabbing"
+scale=1
+applyZoom()
 
-})
+}
 
-window.addEventListener("mousemove",function(e){
 
-if(!dragging)return
+function applyZoom(){
 
-posX=e.clientX-startX
-posY=e.clientY-startY
+img.style.width=(scale*100)+"%"
 
-updateTransform()
-
-})
-
-window.addEventListener("mouseup",function(){
-
-dragging=false
-img.style.cursor="grab"
-
-})
+}
 
 </script>
 
