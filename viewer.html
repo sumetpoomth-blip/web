@@ -2,77 +2,54 @@
 
 <html>
 <head>
-<meta charset="utf-8">
-<title>Image Viewer</title>
+<meta charset="UTF-8">
+<title>Inventory Image Viewer</title>
 
 <style>
 
 body{
-    margin:0;
-    font-family:Arial;
-    background:#111;
-    color:white;
+font-family:Arial;
+margin:0;
+height:100vh;
+display:flex;
 }
 
-/* top bar */
-
-#topbar{
-    background:#222;
-    padding:10px;
-    display:flex;
-    gap:10px;
-    align-items:center;
+#tableArea{
+width:50%;
+overflow:auto;
+border-right:1px solid #ccc;
 }
 
-#search{
-    padding:5px;
-    width:220px;
+table{
+width:100%;
+border-collapse:collapse;
 }
 
-/* buttons */
-
-button{
-    padding:5px 12px;
-    cursor:pointer;
+th,td{
+border:1px solid #ccc;
+padding:6px;
+font-size:14px;
 }
 
-/* viewer */
+tr:hover{
+background:#f0f0f0;
+cursor:pointer;
+}
 
 #viewer{
-    width:100%;
-    height:70vh;
-    overflow:auto;
-    background:#000;
-    text-align:center;
+width:50%;
+position:relative;
+overflow:hidden;
+background:#111;
+display:flex;
+justify-content:center;
+align-items:center;
 }
 
-/* image */
-
-#imgview{
-    display:block;
-    margin:auto;
-}
-
-/* thumbnails */
-
-#thumbs{
-    background:#222;
-    padding:10px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-}
-
-.thumb{
-    width:80px;
-    height:80px;
-    object-fit:cover;
-    cursor:pointer;
-    border:2px solid #444;
-}
-
-.thumb:hover{
-    border:2px solid white;
+#img{
+max-width:none;
+transform-origin:center center;
+cursor:grab;
 }
 
 </style>
@@ -81,175 +58,156 @@ button{
 
 <body>
 
-<div id="topbar">
+<div id="tableArea">
 
-<input id="search" placeholder="Search image">
+<table id="dataTable">
 
-<button onclick="zoomIn()">+</button> <button onclick="zoomOut()">-</button> <button onclick="resetZoom()">Reset</button>
+<thead>
+<tr>
+<th>No.</th>
+<th>Brand</th>
+<th>Model</th>
+<th>S/N Computer</th>
+<th>Access Computer</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr data-sn="2QSD862">
+<td>1</td><td>DELL</td><td>OptiPlex3020</td><td>2QSD862</td><td>IU100158000092</td>
+</tr>
+
+<tr data-sn="4YSD862">
+<td>2</td><td>DELL</td><td>OptiPlex3020</td><td>4YSD862</td><td>IU100158000094</td>
+</tr>
+
+<tr data-sn="60TD862">
+<td>3</td><td>DELL</td><td>OptiPlex3020</td><td>60TD862</td><td>IU100158000095</td>
+</tr>
+
+<tr data-sn="6ZSD862">
+<td>4</td><td>DELL</td><td>OptiPlex3020</td><td>6ZSD862</td><td>IU100158000096</td>
+</tr>
+
+<tr data-sn="DNSD862">
+<td>5</td><td>DELL</td><td>OptiPlex3020</td><td>DNSD862</td><td>IU100158000100</td>
+</tr>
+
+<tr data-sn="GYSD862">
+<td>6</td><td>DELL</td><td>OptiPlex3020</td><td>GYSD862</td><td>IU100158000101</td>
+</tr>
+
+<tr data-sn="HPSD862">
+<td>7</td><td>DELL</td><td>OptiPlex3020</td><td>HPSD862</td><td>IU100158000103</td>
+</tr>
+
+<tr data-sn="15DT992">
+<td>8</td><td>DELL</td><td>OptiPlex3020</td><td>15DT992</td><td>IU200158000007</td>
+</tr>
+
+<tr data-sn="15DY992">
+<td>9</td><td>DELL</td><td>OptiPlex3020</td><td>15DY992</td><td>IU200158000009</td>
+</tr>
+
+<tr data-sn="15F0B92">
+<td>10</td><td>DELL</td><td>OptiPlex3020</td><td>15F0B92</td><td>IU200158000010</td>
+</tr>
+
+</tbody>
+
+</table>
 
 </div>
 
 <div id="viewer">
-<img id="imgview">
-</div>
 
-<div id="thumbs"></div>
+<img id="img">
+
+</div>
 
 <script>
 
-const password = "1234"
-
-let user = prompt("Enter Password")
-
-if(user !== password){
-    alert("Wrong password")
-    document.body.innerHTML = "Access Denied"
-    throw new Error("stop")
-}    
-    
-/* elements */
-
-const imgview = document.getElementById("imgview")
-const thumbs = document.getElementById("thumbs")
-const search = document.getElementById("search")
-
-/* data */
-
-let images = []
-
-/* zoom */
-
-let scale = 1
-let originalWidth = 0
-
-
-imgview.onload = function(){
-
-    originalWidth = imgview.naturalWidth
-    resetZoom()
-
-}
-
-
-/* open image */
-
-function openImage(url){
-
-    imgview.src = url
-
-}
-
-
-/* create thumbnails */
-
-function showThumb(list){
-
-    thumbs.innerHTML=""
-
-    list.forEach(item=>{
-
-        let img = document.createElement("img")
-
-        img.src = item.url
-
-        img.className="thumb"
-
-        img.onclick = function(){
-
-            openImage(item.url)
-
-        }
-
-        thumbs.appendChild(img)
-
-    })
-
-}
-
-
-
-/* search */
-
-search.addEventListener("input",function(){
-
-    let keyword = this.value.toLowerCase()
-
-    let result = images.filter(x=>x.name.toLowerCase().includes(keyword))
-
-    showThumb(result)
-
-    if(result.length>0){
-
-        openImage(result[0].url)
-
-    }
-
-})
-
-
-
-/* zoom */
-
-function zoomIn(){
-
-    scale += 0.2
-    updateZoom()
-
-}
-
-function zoomOut(){
-
-    scale -= 0.2
-
-    if(scale<0.2) scale=0.2
-
-    updateZoom()
-
-}
-
-function resetZoom(){
-
-    scale = 1
-    updateZoom()
-
-}
-
-function updateZoom(){
-
-    imgview.style.width = (originalWidth * scale) + "px"
-    imgview.style.height = "auto"
-
-}
-
-
-
-/* load images.json */
+let images={}
+let img=document.getElementById("img")
 
 fetch("images.json")
-.then(res => res.json())
-.then(data => {
-
-    images = data
-
-    showThumb(images)
-
+.then(r=>r.json())
+.then(data=>{
+data.forEach(i=>{
+images[i.name]=i.url
+})
 })
 
+document.querySelectorAll("#dataTable tbody tr").forEach(row=>{
 
+row.onclick=function(){
 
-/* open image from Excel link */
+let sn=this.dataset.sn
 
-const params = new URLSearchParams(window.location.search)
-
-const img = params.get("img")
-
-if(img){
-
-    imgview.src = img
+if(images[sn]){
+img.src=images[sn]
+scale=1
+posX=0
+posY=0
+updateTransform()
+}
 
 }
 
+})
 
+let scale=1
+let posX=0
+let posY=0
+
+function updateTransform(){
+img.style.transform=`translate(${posX}px,${posY}px) scale(${scale})`
+}
+
+document.getElementById("viewer").addEventListener("wheel",function(e){
+
+e.preventDefault()
+
+if(e.deltaY<0){
+scale*=1.1
+}else{
+scale/=1.1
+}
+
+updateTransform()
+
+})
+
+let dragging=false
+let startX,startY
+
+img.addEventListener("mousedown",function(e){
+
+dragging=true
+startX=e.clientX-posX
+startY=e.clientY-posY
+img.style.cursor="grabbing"
+
+})
+
+window.addEventListener("mousemove",function(e){
+
+if(!dragging)return
+
+posX=e.clientX-startX
+posY=e.clientY-startY
+
+updateTransform()
+
+})
+
+window.addEventListener("mouseup",function(){
+
+dragging=false
+img.style.cursor="grab"
+
+})
 
 </script>
 
