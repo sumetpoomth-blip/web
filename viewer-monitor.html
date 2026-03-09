@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Inventory Image Viewer</title>
+
+<style>
+
+#footerMenu a.active{
+font-weight:bold;
+color:#4CAF50;
+}
+  
+#footerMenu{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#222;
+text-align:center;
+padding:10px 0;
+}
+
+#footerMenu a{
+color:white;
+margin:0 20px;
+text-decoration:none;
+font-size:16px;
+}
+
+#footerMenu a:hover{
+text-decoration:underline;
+}
+
+body{
+font-family:Arial;
+margin:0;
+height:100vh;
+display:flex;
+padding-bottom:60px;
+}
+
+#tableArea{
+width:50%;
+overflow:auto;
+border-right:1px solid #ccc;
+display:flex;
+flex-direction:column;
+}
+
+#searchBox{
+padding:10px;
+border-bottom:1px solid #ccc;
+}
+
+#searchInput{
+width:95%;
+padding:6px;
+font-size:14px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:6px;
+font-size:14px;
+}
+
+tr:hover{
+background:#f0f0f0;
+cursor:pointer;
+}
+
+#viewer{
+width:50%;
+display:flex;
+flex-direction:column;
+background:#111;
+}
+
+#toolbar{
+padding:8px;
+background:#222;
+border-bottom:1px solid #444;
+}
+
+button{
+padding:6px 12px;
+margin-right:6px;
+font-size:16px;
+cursor:pointer;
+}
+
+#imageContainer{
+flex:1;
+overflow:auto;
+background:#111;
+}
+
+#img{
+display:block;
+transform-origin:top left;
+}
+
+</style>
+
+</head>
+
+<body>
+  
+<div id="tableArea">
+
+<div id="searchBox">
+<input id="searchInput" placeholder="Search S/N / Brand / Model">
+</div>
+
+<table id="dataTable">
+
+<thead>
+<tr>
+<th>No.</th>
+<th>Brand</th>
+<th>Model</th>
+<th>S/N Monitor</th>
+<th>Access Monitor</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr data-sn="CN01NP7T6418054T0AHL"><td>1</td><td>Dell</td><td>E191319"</td><td>CN01NP7T6418054T0AHL</td><td>IU100158000100</td></tr>
+<tr data-sn="CN01NP7T6418054T0A5L"><td>2</td><td>Dell</td><td>E191319"</td><td>CN01NP7T6418054T0A5L</td><td>IU100158000095</td></tr>
+<tr data-sn="CN01NP7T6418054T0ASL"><td>3</td><td>Dell</td><td>E191319</td><td>CN01NP7T6418054T0ASL</td><td>IU100158000103</td></tr>
+<tr data-sn="CN01NP7T6418054T0AEL"><td>4</td><td>Dell</td><td>E191319</td><td>CN01NP7T6418054T0AEL</td><td>IU100158000098</td></tr>
+<tr data-sn="CN01NP7T6418054T0ARL"><td>5</td><td>Dell</td><td>E191319</td><td>CN01NP7T6418054T0ARL</td><td>IU100158000101</td></tr>
+<tr data-sn="CN01NP7T6418054T0A8L"><td>6</td><td>Dell</td><td>E191319"</td><td>CN01NP7T6418054T0A8L</td><td>IU100158000102</td></tr>
+<tr data-sn="CN01NP7T6418054T09YL"><td>7</td><td>Dell</td><td>E191319"</td><td>CN01NP7T6418054T09YL</td><td>IU100158000092</td></tr>
+<tr data-sn="CN01NP7T6418054T0AGL"><td>8</td><td>Dell</td><td>E191319"</td><td>CN01NP7T6418054T0AGL</td><td>IU100158000099</td></tr>
+<tr data-sn="CN01NP7T6418054T09WL"><td>9</td><td>Dell</td><td>E191319"</td><td>CN01NP7T6418054T09WL</td><td>IU100158000091</td></tr>
+<tr data-sn="CN01NP7T6418054T0ABL"><td>10</td><td>Dell</td><td>E191319"</td><td>CN01NP7T6418054T0ABL</td><td>IU100158000097</td></tr>
+<tr data-sn="CN01NP7T6418054T0A6L"><td>11</td><td>Dell</td><td>E191319"</td><td>CN01NP7T6418054T0A6L</td><td>IU100158000096</td></tr>
+<tr data-sn="CN-0JD60P-QDC00-75V-0FHL"><td>12</td><td>Dell</td><td>19.15"P2015</td><td>CN-0JD60P-QDC00-75V-0FHL</td><td>U100160000145</td></tr>
+<tr data-sn="CN-0JD60P-QDC00-75V-0HAL"><td>13</td><td>Dell</td><td>19.15"P2015</td><td>CN-0JD60P-QDC00-75V-0HAL</td><td>IU100160000140</td></tr>
+<tr data-sn="CN0JD60PQDC0079N050B"><td>14</td><td>Dell</td><td>P201619.5"</td><td>CN0JD60PQDC0079N050B</td><td>U100160000044</td></tr>
+<tr data-sn="VK739414"><td>15</td><td>LENOVO</td><td>E2054-19.5"</td><td>VK739414</td><td>IU200159000030</td></tr>
+<tr data-sn="VK739380"><td>16</td><td>LENOVO</td><td>E2054-19.5</td><td>VK739380</td><td>IU200159000027</td></tr>
+<tr data-sn="VK741063"><td>17</td><td>LENOVO</td><td>E2054-19.5</td><td>VK741063</td><td>IU200159000031</td></tr>
+<tr data-sn="VK741062"><td>18</td><td>LENOVO</td><td>E2054-19.5"</td><td>VK741062</td><td>IU200159000029</td></tr>
+<tr data-sn="VK739383"><td>19</td><td>LENOVO</td><td>E2054-19.5"</td><td>VK739383</td><td>IU100159000123</td></tr>
+<tr data-sn="PB5NYTT"><td>20</td><td>LENOVO</td><td>LED19"</td><td>PB5NYTT</td><td>IU100156000141</td></tr>
+<tr data-sn="CN0R49DY6418025P1JKL"><td>21</td><td>Dell</td><td>E170Sc</td><td>CN0R49DY6418025P1JKL</td><td></td></tr>
+<tr data-sn="CN0KC139466335CN26PU"><td>22</td><td>Dell</td><td>E191319"</td><td>CN0KC139466335CN26PU</td><td></td></tr>
+<tr data-sn="2HCTTJ1"><td>23</td><td>Dell</td><td>VOSTRO320</td><td>2HCTTJ1</td><td></td></tr>
+<tr data-sn="CN0W6XYPFCC007ABAU9XA00"><td>24</td><td>Dell</td><td>SE2218HV</td><td>CN0W6XYPFCC007ABAU9XA00</td><td></td></tr>
+<tr data-sn="CN0G7KHK74445586BZFLA00"><td>25</td><td>Dell</td><td>E2016</td><td>CN0G7KHK74445586BZFLA00</td><td></td></tr>
+<tr data-sn="CN0PPGMV728722B8A62M"><td>26</td><td>Dell</td><td>LED</td><td>CN0PPGMV728722B8A62M</td><td></td></tr>
+<tr data-sn="CN0G7KHK74445586BWVLA00"><td>27</td><td>Dell</td><td>E2016</td><td>CN0G7KHK74445586BWVLA00</td><td></td></tr>
+<tr data-sn="V1A3218"><td>28</td><td>Dell</td><td>E191319"</td><td>V1A3218</td><td>IU100156000141</td></tr>
+<tr data-sn="23-HZ537"><td>29</td><td>IBM</td><td>6734-AC1</td><td>23-HZ537</td><td></td></tr>
+<tr data-sn="VK446271"><td>30</td><td>LENOVO</td><td>ThinkVisionE2054</td><td>VK446271</td><td></td></tr>
+<tr data-sn="VNBLA7D"><td>31</td><td>LENOVO</td><td>ThinkVisionLT1712p</td><td>VNBLA7D</td><td></td></tr>
+<tr data-sn="VNBAPH2"><td>32</td><td>LENOVO</td><td>L1711PC</td><td>VNBAPH2</td><td></td></tr>
+<tr data-sn="V307733"><td>33</td><td>LENOVO</td><td>ThinkVision</td><td>V307733</td><td></td></tr>
+<tr data-sn="VNAA57N"><td>34</td><td>LENOVO</td><td>ThinkVisionLT1712p</td><td>VNAA57N</td><td></td></tr>
+<tr data-sn="V1ANG37"><td>35</td><td>LENOVO</td><td>ThinkVision</td><td>V1ANG37</td><td></td></tr>
+<tr data-sn="DL4A1215900513"><td>36</td><td>LENOVO</td><td>ThinkVisionLT1712p</td><td>DL4A1215900513</td><td></td></tr>
+<tr data-sn="VNBFBC7"><td>37</td><td>LENOVO</td><td>ThinkVisionLT1712p</td><td>VNBFBC7</td><td></td></tr>
+<tr data-sn="DL4A1215900530"><td>38</td><td>LENOVO</td><td>17S1SB/67</td><td>DL4A1215900530</td><td></td></tr>
+<tr data-sn="VNBNLMV"><td>39</td><td>LENOVO</td><td>ThinkVision</td><td>VNBNLMV</td><td></td></tr>
+<tr data-sn="V1X8041"><td>40</td><td>LENOVO</td><td>LED</td><td>V1X8041</td><td></td></tr>
+<tr data-sn="DL1A1103105999"><td>41</td><td>PHILIPS</td><td>17S1SB/67</td><td>DL1A1103105999</td><td></td></tr>
+<tr data-sn="DL4A1116587397"><td>42</td><td>PHILIPS</td><td>17S1SB/67</td><td>DL4A1116587397</td><td></td></tr>
+<tr data-sn="NEM2HMDB600202D"><td>43</td><td>SAMSUNG</td><td>E1720NRX</td><td>NEM2HMDB600202D</td><td></td></tr>
+<tr data-sn="MY17HDBQ102557W"><td>44</td><td>SAMSUNG</td><td>744NX</td><td>MY17HDBQ102557W</td><td></td></tr>
+<tr data-sn="MY17HDBQ813797N"><td>45</td><td>SAMSUNG</td><td>744NX</td><td>MY17HDBQ813797N</td><td></td></tr>
+<tr data-sn="MY17HDBQ909088Z"><td>46</td><td>SAMSUNG</td><td>744NX</td><td>MY17HDBQ909088Z</td><td></td></tr>
+<tr data-sn="HA17HDBP300157N"><td>47</td><td>SAMSUNG</td><td>740N</td><td>HA17HDBP300157N</td><td></td></tr>
+<tr data-sn="HA17HDBP310151T"><td>48</td><td>SAMSUNG</td><td>740N</td><td>HA17HDBP310151T</td><td></td></tr>
+<tr data-sn="MY17HDBQ900193H"><td>49</td><td>SAMSUNG</td><td>743NX</td><td>MY17HDBQ900193H</td><td></td></tr>
+<tr data-sn="MY17HDBQ800420P"><td>50</td><td>SAMSUNG</td><td>743NX</td><td>MY17HDBQ800420P</td><td></td></tr>
+<tr data-sn="PE22HDBZ607580X"><td>51</td><td>SAMSUNG</td><td>E1920X</td><td>PE22HDBZ607580X</td><td></td></tr>
+<tr data-sn="PE22HDBZA22210W"><td>52</td><td>SAMSUNG</td><td>E1920X</td><td>PE22HDBZA22210W</td><td></td></tr>
+<tr data-sn="NEM2HMDB601095A"><td>53</td><td>SAMSUNG</td><td>E1720NRX</td><td>NEM2HMDB601095A</td><td></td></tr>
+<tr data-sn="MY17HDBQ900268A"><td>54</td><td>SAMSUNG</td><td>743NX</td><td>MY17HDBQ900268A</td><td></td></tr>
+<tr data-sn="CN0XP62T7426173S0LMLA00"><td>55</td><td>Dell</td><td>E2016</td><td>CN0XP62T7426173S0LMLA00</td><td>IU200160000007</td></tr>
+<tr data-sn="CN059XYFTV1008610BCBA04"><td>56</td><td>Dell</td><td>P2217</td><td>CN059XYFTV1008610BCBA04</td><td>IU200161000008</td></tr>
+<tr data-sn="V1V4463"><td>57</td><td>LENOVO</td><td>LED19"</td><td>V1V4463</td><td>IU100157000082</td></tr>
+<tr data-sn="V1X7893"><td>58</td><td>LENOVO</td><td>19"LED</td><td>V1X7893</td><td>IU100157000127</td></tr>
+<tr data-sn="V1V4368"><td>59</td><td>LENOVO</td><td>E2054-19.5</td><td>V1V4368</td><td>IU100157000086</td></tr>
+<tr data-sn="V1A3221"><td>60</td><td>LENOVO</td><td>E2054-19.5</td><td>V1A3221</td><td>IU100156000142</td></tr>
+<tr data-sn="V1A3314"><td>61</td><td>LENOVO</td><td>LED19"</td><td>V1A3314</td><td>IU100156000145</td></tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div id="viewer">
+
+<div id="toolbar">
+<button onclick="zoomIn()">+</button>
+<button onclick="zoomOut()">-</button>
+<button onclick="resetZoom()">Reset</button>
+</div>
+
+<div id="imageContainer">
+<img id="img">
+</div>
+
+</div>
+
+<script>
+
+let images={}
+let img=document.getElementById("img")
+let scale=1
+
+
+fetch("images-computer.json")
+.then(r=>r.json())
+.then(data=>{
+data.forEach(i=>{
+images[i.name]=i.url
+})
+})
+
+
+document.querySelectorAll("#dataTable tbody tr").forEach(row=>{
+
+row.onclick=function(){
+
+let sn=this.dataset.sn
+
+if(images[sn]){
+
+img.src=images[sn]
+scale=1
+applyZoom()
+
+}
+
+}
+
+})
+
+
+function zoomIn(){
+
+scale+=0.2
+applyZoom()
+
+}
+
+function zoomOut(){
+
+scale-=0.2
+if(scale<0.2) scale=0.2
+applyZoom()
+
+}
+
+function resetZoom(){
+
+scale=1
+applyZoom()
+
+}
+
+function applyZoom(){
+
+img.style.transform="scale("+scale+")"
+
+}
+
+
+
+document.getElementById("searchInput").addEventListener("keyup",function(){
+
+let filter=this.value.toUpperCase()
+let rows=document.querySelectorAll("#dataTable tbody tr")
+
+rows.forEach(row=>{
+
+let text=row.innerText.toUpperCase()
+
+if(text.indexOf(filter)>-1){
+row.style.display=""
+}else{
+row.style.display="none"
+}
+
+})
+
+})
+
+</script>
+  
+<div id="footerMenu">
+
+<a href="viewer-computer.html">Computer</a>
+
+<a class="active" href="viewer-monitor.html">Monitor</a>
+
+<a href="viewer-ups.html">UPS</a>
+
+</div>
+  
+</body>
+</html>
